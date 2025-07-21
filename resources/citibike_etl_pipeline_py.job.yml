@@ -1,0 +1,57 @@
+resources:
+  jobs:
+    citibike_etl_pipeline_py:
+      name: citibike_etl_pipeline_py
+      tasks:
+        - task_key: 00_python_wheel_upload
+          python_wheel_task:
+            package_name: rohit_dab_project
+            entry_point: main
+          job_cluster_key: citibike_etl_pipeline_py_cluster
+          libraries:
+            - whl: ../dist/*.whl
+        - task_key: 01_bronze_citibike
+          depends_on:
+            - task_key: 00_python_wheel_upload
+          spark_python_task:
+            python_file: ../citibike_etl/scripts/01_bronze/01_bronze_citibike.py
+            parameters:
+              - "{{job.id}}"
+              - "{{job.run_id}}"
+              - "{{task.run_id}}"
+              - "{{job.start_time.iso_datetime}}"
+              - "${var.catalog}"
+          job_cluster_key: citibike_etl_pipeline_py_cluster
+        - task_key: 02_silver_citibike
+          depends_on:
+            - task_key: 01_bronze_citibike
+          spark_python_task:
+            python_file: ../citibike_etl/scripts/02_silver/02_silver_citibike.py
+            parameters:
+              - "{{job.id}}"
+              - "{{job.run_id}}"
+              - "{{task.run_id}}"
+              - "{{job.start_time.iso_datetime}}"
+              - "${var.catalog}"
+          job_cluster_key: citibike_etl_pipeline_py_cluster
+        - task_key: 03_gold_citibike_daily_ride_summary
+          depends_on:
+            - task_key: 02_silver_citibike
+          spark_python_task:
+            python_file: ../citibike_etl/scripts/03_gold/03_gold_citibike_daily_ride_summary.py
+            parameters:
+              - "${var.catalog}"
+          job_cluster_key: citibike_etl_pipeline_py_cluster
+        - task_key: 03_gold_citibike_daily_station_performance
+          depends_on:
+            - task_key: 02_silver_citibike
+          spark_python_task:
+            python_file: ../citibike_etl/scripts/03_gold/03_gold_citibike_daily_station_performance.py
+            parameters:
+              - "${var.catalog}"
+          job_cluster_key: citibike_etl_pipeline_py_cluster
+      job_clusters:
+        - job_cluster_key: citibike_etl_pipeline_py_cluster
+          new_cluster: ${var.job_cluster}
+      queue:
+        enabled: true
