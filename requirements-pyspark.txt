@@ -1,3 +1,4 @@
+coverage==7.9.2
 googleapis-common-protos==1.63.2
 grpcio==1.60.0
 grpcio-status==1.60.0
@@ -12,6 +13,7 @@ pyarrow==14.0.1
 Pygments==2.19.2
 pyspark==3.5.0
 pytest==8.4.1
+pytest-cov==6.2.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 six==1.17.0
