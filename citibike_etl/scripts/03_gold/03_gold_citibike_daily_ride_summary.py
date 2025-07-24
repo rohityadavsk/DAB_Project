@@ -3,7 +3,7 @@ import sys
 
 catalog = sys.argv[1]
 
-df = spark.read.table('citibike_dev.02_silver.jc_citibike')
+df = spark.read.table(f'{catalog}.02_silver.jc_citibike')
 
 df = df.groupBy('trip_start_date').agg(
     round(max('trip_duration_mins'), 2).alias('max_trip_duration_mins'),

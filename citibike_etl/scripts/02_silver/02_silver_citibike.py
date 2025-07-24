@@ -10,7 +10,7 @@ task_id = sys.argv[3]
 processed_timestamp = sys.argv[4]
 catalog = sys.argv[5]
 
-df = spark.read.table('citibike_dev.01_bronze.jc_citibike')
+df = spark.read.table(f'{catalog}.01_bronze.jc_citibike')
 
 df = get_trip_duration_mins(spark, df, 'started_at', 'ended_at', 'trip_duration_mins')
 

@@ -24,7 +24,7 @@ schema = StructType([
     StructField("member_casual", StringType(), True),
 ])
 
-df = spark.read.csv('/Volumes/citibike_dev/00_landing/source_citibike_data/JC-202503-citibike-tripdata.csv', schema=schema, header=True)
+df = spark.read.csv(f'/Volumes/{catalog}/00_landing/source_citibike_data/JC-202503-citibike-tripdata.csv', schema=schema, header=True)
 
 df = df.withColumn('metadata',
                    create_map(
